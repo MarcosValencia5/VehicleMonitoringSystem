@@ -1,5 +1,5 @@
 from flask import Flask, render_template
-from data_source import get_vehicle_data
+from data_source_sim import get_vehicle_data
 from logger import log_data
 
 
