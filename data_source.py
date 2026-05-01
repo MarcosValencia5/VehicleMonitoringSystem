@@ -1,8 +1,21 @@
 import obd
 
-connection = obd.OBD("/dev/ttyUSB0")
+connection = None
+
+def connect_obd():
+    global connection
+    if connection is None or not connection.is_connected():
+        try:
+            print("Connecting to OBD...")
+            connection = obd.OBD("/dev/ttyUSB0")
+        except Exception as e:
+            print("Connection failed:", e)
+            connection = None
 
 def safe_query(cmd):
+    if connection is None:
+        return 0
+
     try:
         response = connection.query(cmd)
         if response.is_null():
@@ -12,6 +25,8 @@ def safe_query(cmd):
         return 0
 
 def get_vehicle_data():
+    connect_obd()
+
     return {
         "speed": safe_query(obd.commands.SPEED),
         "rpm": safe_query(obd.commands.RPM),
